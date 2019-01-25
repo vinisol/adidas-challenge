@@ -1,0 +1,70 @@
+version: "3.7"
+
+services:
+
+  eureka-server:
+    build: ./eureka-server
+    image: eureka-server
+    environment:
+      - EUREKA_HOST=eureka-server
+    ports:
+      - 8761:8761
+    networks:
+      - spring-cloud-network
+
+  itinerary:
+    build: ./manage-itinerary
+    image: manage-itinerary-service
+    environment:
+      - DATABASE_HOST=postgres
+      - EUREKA_HOST=eureka-server
+    ports:
+      - 8081
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - postgres
+      - eureka-server
+
+  planning:
+    build: ./plan-itinerary
+    image: plan-itinerary-service
+    environment:
+      - EUREKA_HOST=eureka-server
+    ports:
+      - 8082
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - eureka-server
+      - itinerary
+
+  postgres:
+    build: ./itinerary-db
+    image: itinerary-db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
+    ports:
+      - 5432:5432
+    networks:
+      - spring-cloud-network
+
+  zuul-server:
+    build: ./zuul-server
+    image: zuul-server
+    environment:
+      - EUREKA_HOST=eureka-server
+    ports:
+      - 9009:9009
+    networks:
+      - spring-cloud-network
+    depends_on:
+      - eureka-server
+      - itinerary
+      - planning
+
+networks:
+  spring-cloud-network:
+    driver: bridge
