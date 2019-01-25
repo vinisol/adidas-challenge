@@ -78,7 +78,8 @@ $ docker-compose up -d
 ### Request examples
 
 View all itineraries
-```http://localhost:9009/itinerary/itineraries
+```
+http://localhost:9009/itinerary/itineraries
 
 [
     {
