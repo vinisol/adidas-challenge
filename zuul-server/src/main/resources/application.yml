@@ -1,0 +1,43 @@
+server:
+  port: 9009
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+eureka:
+  client:
+    enabled: true
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+zuul:
+  ignored-services: "*"
+  routes:
+    itinerary:
+      path: /itinerary/**
+      serviceId: itinerary
+
+    planning:
+      path: /planning/**
+      serviceId: planning
+
+ribbon:
+  ConnectTimeout:  10000
+  ReadTimeout:  10000
+
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: false
